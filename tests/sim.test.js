@@ -8,3 +8,7 @@ test('full assisted service visits all five stations and obeys signal',()=>{cons
 test('manual input overrides assist and invalid timestep is harmless',()=>{const s=new SubwaySim();s.doors=null;s.next=1;s.assist=true;s.step(.1,{power:true});assert.equal(s.assist,false);const before=s.s;s.step(NaN);assert.equal(s.s,before);});
 
 test('recovering beyond a red signal does not teleport backwards',()=>{const s=new SubwaySim();s.next=3;s.s=2200;s.doors=null;s.recover();advance(s,5);s.toggleDoors();advance(s,2,{power:true});assert.ok(s.s>=2100);});
+
+import {fixedFrame,MAX_STEPS_PER_FRAME} from '../timing.js';
+test('two FPS follows real elapsed time for boarding and departure',()=>{const s=new SubwaySim();let accumulator=0;for(let frame=0;frame<10;frame++)accumulator=fixedFrame(s,.5,accumulator).accumulator;assert.ok(Math.abs(s.time-5)<.001);assert.ok(s.dwell>=4.99);assert.equal(s.toggleDoors(),true);for(let frame=0;frame<10;frame++)accumulator=fixedFrame(s,.5,accumulator,{power:true}).accumulator;assert.ok(Math.abs(s.time-10)<.001);assert.ok(s.v>3);assert.ok(s.s>5);});
+test('fixed frame caps suspended-tab catchup and rejects invalid elapsed',()=>{const s=new SubwaySim();const capped=fixedFrame(s,60);assert.equal(capped.steps,MAX_STEPS_PER_FRAME);assert.ok(s.time<.51);const before=s.time;assert.equal(fixedFrame(s,NaN).steps,0);assert.equal(fixedFrame(s,-1).steps,0);assert.equal(s.time,before);});

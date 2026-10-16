@@ -19,7 +19,7 @@ Stop at the orange marker, open doors, allow at least four seconds for boarding,
 
 ## Architecture and verification
 
-`sim.js` is a deterministic pure simulation with no rendering dependency. `main.js` provides the Three.js scene, DOM HUD/menu controls, synthesized motor sound, and a fixed 60Hz simulation loop. Static scenery is merged by material and spatial section. Three.js r180 and its utility are vendored locally under the included MIT license. All graphics/textures are procedural and original.
+`sim.js` is a deterministic pure simulation with no rendering dependency. `main.js` provides the Three.js scene, DOM HUD/menu controls, synthesized motor sound, and a fixed 60Hz simulation loop that follows elapsed wall time down to 2 FPS. Longer stalls are capped at 30 simulation steps, and pause/restart reset the frame clock. Slow devices automatically lower resolution and view distance. Static scenery is merged by material and spatial section. Three.js r180 and its utility are vendored locally under the included MIT license. All graphics/textures are procedural and original.
 
 Run `npm test` for the simulation checks. `node tests/browser-smoke.cjs` runs a real Chromium smoke flow using Playwright when installed, and writes screenshots under `evidence/`.
 

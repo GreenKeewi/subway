@@ -1,6 +1,7 @@
 import * as THREE from './vendor/three.module.js';
 import {mergeGeometries} from './vendor/BufferGeometryUtils.js';
 import {SubwaySim,STATIONS,speedLimit,trackPoint,clamp} from './sim.js';
+import {fixedFrame} from './timing.js';
 const $=id=>document.getElementById(id), sim=new SubwaySim(),keys=new Set();
 const renderer=new THREE.WebGLRenderer({canvas:$('world'),antialias:true,powerPreference:'high-performance'});renderer.setPixelRatio(Math.min(devicePixelRatio,1.6));renderer.setSize(innerWidth,innerHeight);renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.15;
 const scene=new THREE.Scene();scene.background=new THREE.Color('#97a9a4');scene.fog=new THREE.FogExp2('#93a5a1',.00135);
@@ -58,11 +59,14 @@ const batches=new Map(),remove=[];
 scene.traverse(obj=>{if(!obj.isMesh||obj.isInstancedMesh||obj===sky||obj===sunDisc)return;let p=obj;while(p){if(p===train||p===signalGroup)return;p=p.parent;}const key=obj.material.uuid+':'+Math.floor(obj.getWorldPosition(new THREE.Vector3()).z/200);if(!batches.has(key))batches.set(key,{mat:obj.material,geos:[]});batches.get(key).geos.push(obj.geometry.clone().applyMatrix4(obj.matrixWorld));remove.push(obj);});
 for(const o of remove)o.removeFromParent();
 for(const {mat,geos} of batches.values()){const geo=mergeGeometries(geos,false);if(geo){geo.computeBoundingSphere();scene.add(new THREE.Mesh(geo,mat));}for(const g of geos)g.dispose();}
+const graphics={fps:60,scale:Math.min(devicePixelRatio,1.6),tier:0,viewDistance:2200};let perfElapsed=0,perfFrames=0;
+function adaptGraphics(elapsed){if(elapsed<=0||elapsed>2)return;perfElapsed+=elapsed;perfFrames++;if(perfElapsed<2.5)return;graphics.fps=perfFrames/perfElapsed;perfElapsed=0;perfFrames=0;const tier=graphics.fps<7?3:graphics.fps<12?2:graphics.fps<18?1:0;if(tier<=graphics.tier)return;graphics.tier=tier;graphics.scale=Math.min(devicePixelRatio,[1.6,.85,.65,.5][tier]);graphics.viewDistance=[2200,1300,900,700][tier];renderer.setPixelRatio(graphics.scale);camera.far=graphics.viewDistance;camera.updateProjectionMatrix();scene.fog.density=[.00135,.0017,.0021,.0028][tier];}
+function resetClock(){lastTime=performance.now();accumulator=0;}
 let doorAmount=0;let started=false,paused=false,view='cab',helpReturn='menu',lastTime=0,accumulator=0,lastMessage='',muted=false,audio=null,finished=false;
-function start(assist=false){sim.reset();sim.assist=assist;started=true;paused=false;finished=false;view='cab';for(const id of ['menu','pause','result','help'])$(id).hidden=true;$('hud').hidden=false;$('cab').hidden=false;keys.clear();initAudio();document.activeElement?.blur();lastTime=performance.now();}
-function pause(){if(!started||finished)return;paused=!paused;$('pause').hidden=!paused;keys.clear();if(paused)$('resume').focus();else document.activeElement?.blur();}
-function showHelp(from){helpReturn=from;$('help').hidden=false;if(started)paused=true;$('help-close').focus();keys.clear();}
-function closeHelp(){$('help').hidden=true;if(helpReturn==='game'){paused=false;document.activeElement?.blur();}else if(helpReturn==='menu')$('menu-help').focus();else $('pause-help').focus();}
+function start(assist=false){sim.reset();sim.assist=assist;started=true;paused=false;finished=false;view='cab';for(const id of ['menu','pause','result','help'])$(id).hidden=true;$('hud').hidden=false;$('cab').hidden=false;keys.clear();initAudio();document.activeElement?.blur();resetClock();}
+function pause(){if(!started||finished)return;paused=!paused;resetClock();$('pause').hidden=!paused;keys.clear();if(paused)$('resume').focus();else document.activeElement?.blur();}
+function showHelp(from){helpReturn=from;resetClock();$('help').hidden=false;if(started)paused=true;$('help-close').focus();keys.clear();}
+function closeHelp(){resetClock();$('help').hidden=true;if(helpReturn==='game'){paused=false;document.activeElement?.blur();}else if(helpReturn==='menu')$('menu-help').focus();else $('pause-help').focus();}
 function initAudio(){if(audio)return;try{const ac=new (window.AudioContext||window.webkitAudioContext)(),gain=ac.createGain(),motor=ac.createOscillator(),rumble=ac.createOscillator(),low=ac.createBiquadFilter();motor.type='sawtooth';rumble.type='triangle';low.type='lowpass';low.frequency.value=550;motor.connect(low);rumble.connect(low);low.connect(gain);gain.connect(ac.destination);gain.gain.value=0;motor.start();rumble.start();audio={ac,gain,motor,rumble};}catch(e){}}
 function chime(){if(!audio||muted)return;const {ac}=audio;for(let i=0;i<2;i++){const o=ac.createOscillator(),g=ac.createGain();o.connect(g);g.connect(ac.destination);o.frequency.value=i?660:880;const t=ac.currentTime+i*.25;g.gain.setValueAtTime(.05,t);g.gain.exponentialRampToValueAtTime(.001,t+.35);o.start(t);o.stop(t+.4);}}
 $('start').onclick=()=>start();$('training').onclick=()=>start(true);$('menu-help').onclick=()=>showHelp('menu');$('pause-help').onclick=()=>showHelp('pause');$('help-close').onclick=closeHelp;$('resume').onclick=pause;$('pause-button').onclick=pause;$('restart').onclick=()=>start();$('again').onclick=()=>start();
@@ -86,8 +90,8 @@ function ui(){const st=sim.station;$('speed').textContent=Math.round(sim.v*2.236
   if(lastMessage!==sim.message){lastMessage=sim.message;$('toast').textContent=sim.message;}$('toast').style.opacity=sim.messageAge<6?'1':'0';
   if(sim.phase==='complete'&&!finished){finished=true;$('result').hidden=false;$('result-stats').innerHTML=`<div><b>${sim.score}</b><span>POINTS</span></div><div><b>${sim.stops.length}/5</b><span>STOPS</span></div><div><b>${$('clock').textContent}</b><span>SERVICE TIME</span></div>`;$('again').focus();}
 }
-function render(t){requestAnimationFrame(render);const dt=Math.min((t-lastTime)/1000||0,.1);lastTime=t;
-  if(started&&!paused&&!finished){accumulator+=dt;while(accumulator>=1/60){sim.step(1/60,{power:keys.has('ArrowUp')||keys.has('KeyW'),brake:keys.has('ArrowDown')||keys.has('KeyS'),emergency:keys.has('Space')});accumulator-=1/60;}}
+function render(t){requestAnimationFrame(render);const realDt=Math.max(0,(t-lastTime)/1000||0),dt=Math.min(realDt,.5);lastTime=t;adaptGraphics(realDt);
+  if(started&&!paused&&!finished){accumulator=fixedFrame(sim,realDt,accumulator,{power:keys.has('ArrowUp')||keys.has('KeyW'),brake:keys.has('ArrowDown')||keys.has('KeyS'),emergency:keys.has('Space')}).accumulator;}
   const s=started?sim.s:1730,{p,angle}=routeFrame(s);train.position.set(0,0,0);train.rotation.set(0,0,0);cars.forEach((car,i)=>{const f=routeFrame(s-i*18.7-8.5);car.position.set(f.p.x,f.p.y,f.p.z);car.rotation.set(f.pitch,f.angle,0,'YXZ');});
   if(!started){const side=trackPoint(s-40);camera.position.set(side.x+33,side.y+10,side.z);const look=trackPoint(s-15);camera.lookAt(look.x,look.y+2,look.z);cars.forEach(c=>c.visible=true);}
   else if(view==='cab'){const front=trackPoint(s+1),target=trackPoint(s+90);camera.position.set(front.x,front.y+3.1+Math.sin(t*.005)*.008*(sim.v/10),front.z);camera.lookAt(target.x,target.y+2.65,target.z);cars.forEach(c=>c.visible=false);}
@@ -97,5 +101,5 @@ function render(t){requestAnimationFrame(render);const dt=Math.min((t-lastTime)/
   if(started)ui();renderer.render(scene,camera);
 }
 addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);});
-window.__subway={sim,start,pause,get state(){return {...sim.snapshot(),started,paused,view,renderer:renderer.info.render};},advance(seconds){for(let t=0;t<seconds;t+=1/60)sim.step(1/60);ui();return this.state;},setState(values){Object.assign(sim,values);ui();return this.state;},setView(v){view=v;$('cab').hidden=v!=='cab';},stations:STATIONS};
+window.__subway={sim,start,pause,get state(){return {...sim.snapshot(),started,paused,view,graphics:{...graphics},renderer:renderer.info.render};},advance(seconds){for(let t=0;t<seconds;t+=1/60)sim.step(1/60);ui();return this.state;},setState(values){Object.assign(sim,values);ui();return this.state;},setView(v){view=v;$('cab').hidden=v!=='cab';},stations:STATIONS};
 $('loading').remove();$('start').focus();requestAnimationFrame(render);
