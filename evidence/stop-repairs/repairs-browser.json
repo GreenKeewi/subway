@@ -1,0 +1,376 @@
+{
+  "base": "http://127.0.0.1:8873/subway/",
+  "method": "Local Chromium, native keyboard and normal rAF. Overshoot, readability and bridge inspection use explicit initial-position fixtures; no simulation stepping.",
+  "errors": [],
+  "overshoots": [
+    {
+      "initial": 648,
+      "end": {
+        "route": "quick",
+        "stationCount": 5,
+        "s": 648,
+        "v": 0,
+        "handle": 0,
+        "time": 0.55,
+        "next": 1,
+        "doors": "left",
+        "phase": "service",
+        "score": 0,
+        "assist": true,
+        "signal": "green",
+        "signalCleared": false,
+        "nextSignal": {
+          "at": 1020,
+          "hold": 0,
+          "cleared": false,
+          "index": 0,
+          "distance": 372
+        },
+        "signals": [
+          {
+            "cleared": false,
+            "hold": 0
+          }
+        ],
+        "distance": -8,
+        "aligned": true,
+        "stops": [],
+        "penalties": 0,
+        "totalOverspeed": 0,
+        "totalHarsh": 0,
+        "usedAssist": true,
+        "started": true,
+        "paused": false,
+        "view": "cab",
+        "graphicsLost": false,
+        "guide": {
+          "title": "BOARDING · LEFT SIDE",
+          "text": "Passengers boarding · 4s. Doors lock the train safely.",
+          "action": "BOARDING",
+          "upcomingLimit": 15,
+          "zoneDistance": 112,
+          "brakingDistance": 6,
+          "targetSpeed": 0,
+          "signalAhead": true,
+          "signalDistance": 372,
+          "distance": -8,
+          "targetIsSignal": false,
+          "schedule": "Boarding 4s"
+        },
+        "audio": {
+          "state": "running",
+          "masterGain": 0.9982222318649292,
+          "allSourcesUseMaster": true,
+          "liveOneShots": 0
+        },
+        "graphics": {
+          "fps": 60,
+          "scale": 1,
+          "tier": 0,
+          "viewDistance": 2200
+        },
+        "renderer": {
+          "frame": 5,
+          "calls": 391,
+          "triangles": 148068,
+          "points": 0,
+          "lines": 0
+        }
+      }
+    },
+    {
+      "initial": 658,
+      "end": {
+        "route": "quick",
+        "stationCount": 5,
+        "s": 658,
+        "v": 0,
+        "handle": 0,
+        "time": 0.49999999999999994,
+        "next": 1,
+        "doors": "left",
+        "phase": "service",
+        "score": 0,
+        "assist": true,
+        "signal": "green",
+        "signalCleared": false,
+        "nextSignal": {
+          "at": 1020,
+          "hold": 0,
+          "cleared": false,
+          "index": 0,
+          "distance": 362
+        },
+        "signals": [
+          {
+            "cleared": false,
+            "hold": 0
+          }
+        ],
+        "distance": -18,
+        "aligned": true,
+        "stops": [],
+        "penalties": 0,
+        "totalOverspeed": 0,
+        "totalHarsh": 0,
+        "usedAssist": true,
+        "started": true,
+        "paused": false,
+        "view": "cab",
+        "graphicsLost": false,
+        "guide": {
+          "title": "BOARDING · LEFT SIDE",
+          "text": "Passengers boarding · 4s. Doors lock the train safely.",
+          "action": "BOARDING",
+          "upcomingLimit": 15,
+          "zoneDistance": 102,
+          "brakingDistance": 6,
+          "targetSpeed": 0,
+          "signalAhead": true,
+          "signalDistance": 362,
+          "distance": -18,
+          "targetIsSignal": false,
+          "schedule": "Boarding 4s"
+        },
+        "audio": {
+          "state": "running",
+          "masterGain": 0.14606960117816925,
+          "allSourcesUseMaster": true,
+          "liveOneShots": 0
+        },
+        "graphics": {
+          "fps": 2.6540284360167075,
+          "scale": 0.5,
+          "tier": 3,
+          "viewDistance": 700
+        },
+        "renderer": {
+          "frame": 7,
+          "calls": 127,
+          "triangles": 47320,
+          "points": 0,
+          "lines": 0
+        }
+      }
+    },
+    {
+      "initial": 659.1,
+      "end": {
+        "route": "quick",
+        "stationCount": 5,
+        "s": 640,
+        "v": 0,
+        "handle": 0,
+        "time": 3.899999999999991,
+        "next": 1,
+        "doors": "left",
+        "phase": "service",
+        "score": 0,
+        "assist": true,
+        "signal": "green",
+        "signalCleared": false,
+        "nextSignal": {
+          "at": 1020,
+          "hold": 0,
+          "cleared": false,
+          "index": 0,
+          "distance": 380
+        },
+        "signals": [
+          {
+            "cleared": false,
+            "hold": 0
+          }
+        ],
+        "distance": 0,
+        "aligned": true,
+        "stops": [],
+        "penalties": 1,
+        "totalOverspeed": 0,
+        "totalHarsh": 0,
+        "usedAssist": true,
+        "started": true,
+        "paused": false,
+        "view": "cab",
+        "graphicsLost": false,
+        "guide": {
+          "title": "BOARDING · LEFT SIDE",
+          "text": "Passengers boarding · 4s. Doors lock the train safely.",
+          "action": "BOARDING",
+          "upcomingLimit": 15,
+          "zoneDistance": 120,
+          "brakingDistance": 6,
+          "targetSpeed": 0,
+          "signalAhead": true,
+          "signalDistance": 380,
+          "distance": 0,
+          "targetIsSignal": false,
+          "schedule": "Boarding 4s"
+        },
+        "audio": {
+          "state": "running",
+          "masterGain": 1,
+          "allSourcesUseMaster": true,
+          "liveOneShots": 2
+        },
+        "graphics": {
+          "fps": 7.261331498891692,
+          "scale": 0.5,
+          "tier": 3,
+          "viewDistance": 700
+        },
+        "renderer": {
+          "frame": 37,
+          "calls": 128,
+          "triangles": 47344,
+          "points": 0,
+          "lines": 0
+        }
+      }
+    }
+  ],
+  "layouts": [
+    {
+      "width": 1366,
+      "height": 768,
+      "distance": "140 m",
+      "cue": "BRAKE NOW",
+      "fonts": {
+        "#distance": 34,
+        "#coach": 15,
+        "#brake-cue": 17
+      },
+      "instruction": {
+        "x": 27,
+        "y": 95,
+        "right": 407,
+        "bottom": 299.765625
+      },
+      "bottom": {
+        "x": 25,
+        "y": 630,
+        "right": 1341,
+        "bottom": 748
+      },
+      "signal": {
+        "x": 1192.828125,
+        "y": 98,
+        "right": 1339,
+        "bottom": 135
+      },
+      "scrollWidth": 1366,
+      "canvasWidth": 1366,
+      "overflow": false
+    },
+    {
+      "width": 1024,
+      "height": 650,
+      "distance": "140 m",
+      "cue": "BRAKE NOW",
+      "fonts": {
+        "#distance": 30,
+        "#coach": 14,
+        "#brake-cue": 16
+      },
+      "instruction": {
+        "x": 27,
+        "y": 101,
+        "right": 357,
+        "bottom": 281.125
+      },
+      "bottom": {
+        "x": 25,
+        "y": 522,
+        "right": 999,
+        "bottom": 640
+      },
+      "signal": {
+        "x": 850.828125,
+        "y": 101,
+        "right": 997,
+        "bottom": 138
+      },
+      "scrollWidth": 1024,
+      "canvasWidth": 1024,
+      "overflow": false
+    },
+    {
+      "width": 683,
+      "height": 384,
+      "distance": "140 m",
+      "cue": "BRAKE NOW",
+      "fonts": {
+        "#distance": 30,
+        "#coach": 14,
+        "#brake-cue": 16
+      },
+      "instruction": {
+        "x": 12,
+        "y": 64,
+        "right": 342,
+        "bottom": 236.40625
+      },
+      "bottom": {
+        "x": 10,
+        "y": 265,
+        "right": 673,
+        "bottom": 376
+      },
+      "signal": {
+        "x": 540.078125,
+        "y": 68,
+        "right": 671,
+        "bottom": 102
+      },
+      "scrollWidth": 683,
+      "canvasWidth": 683,
+      "overflow": false
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "distance": "140 m",
+      "cue": "BRAKE NOW",
+      "fonts": {
+        "#distance": 34,
+        "#coach": 15,
+        "#brake-cue": 17
+      },
+      "instruction": {
+        "x": 12,
+        "y": 65,
+        "right": 378,
+        "bottom": 269.765625
+      },
+      "bottom": {
+        "x": 10,
+        "y": 672,
+        "right": 380,
+        "bottom": 832
+      },
+      "signal": {
+        "x": 12,
+        "y": 280,
+        "right": 142.921875,
+        "bottom": 314
+      },
+      "scrollWidth": 390,
+      "canvasWidth": 390,
+      "overflow": false
+    }
+  ],
+  "bridges": [
+    1470,
+    3210,
+    6740
+  ],
+  "resultFixture": {
+    "panelBottom": 372.46875,
+    "replayBottom": 282.46875,
+    "height": 384,
+    "rows": 10,
+    "reportFont": "14px"
+  },
+  "helpScroll": true,
+  "pass": true
+}

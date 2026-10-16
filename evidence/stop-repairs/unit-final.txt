@@ -1,0 +1,34 @@
+
+> borough-line@1.0.0 test
+> node --test tests/sim.test.js
+
+✔ boarding enforces dwell and movement interlock (3.041047ms)
+✔ wrong-side doors refuse, platform side succeeds (2.497077ms)
+✔ red signal protects train and releases after wait (1.140267ms)
+✔ recovery restores missed platform and applies penalty (0.220829ms)
+✔ full assisted service visits all five stations and obeys signal (30.730713ms)
+✔ manual input overrides assist and invalid timestep is harmless (0.268289ms)
+✔ recovering beyond a red signal does not teleport backwards (0.593484ms)
+✔ two FPS follows real elapsed time for boarding and departure (1.009182ms)
+✔ fixed frame caps suspended-tab catchup and rejects invalid elapsed (0.513014ms)
+✔ assist serves stopped overshoots inside tolerance and brakes/recover outside it (46.497772ms)
+✔ manual overshoot stays stopped and reports recovery at the exact tolerance edge (0.903124ms)
+✔ curved bridge decks have real top, underside and sealed edges across chunk boundaries (65.721627ms)
+✔ coaching gives speed-dependent brake cue and prioritizes red signal (0.28221ms)
+✔ coast overrides assist and stop grades capture comfort (0.330171ms)
+✔ signal coaching explains early stop and forgiving hold zone (0.419184ms)
+✔ driving keys override assist while doors are interlocked (0.386405ms)
+✔ ordinary full service brake is comfortable; emergency is graded (1.083713ms)
+✔ full line visits ten distinct stops and three signals without ending at quick terminus (56.071823ms)
+✔ extended signals coach and protect at their own stop lines (0.823546ms)
+✔ manual guide warns before lower line limits (0.191535ms)
+✔ precision guidance remains positive until the marker and supports accurate keyboard-style stops (16.461823ms)
+✔ viaduct columns meet the deck underside and their footings without gaps (70.367322ms)
+ℹ tests 22
+ℹ suites 0
+ℹ pass 22
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 430.867131

@@ -14,6 +14,35 @@ test('two FPS follows real elapsed time for boarding and departure',()=>{const s
 test('fixed frame caps suspended-tab catchup and rejects invalid elapsed',()=>{const s=new SubwaySim();const capped=fixedFrame(s,60);assert.equal(capped.steps,MAX_STEPS_PER_FRAME);assert.ok(s.time<.51);const before=s.time;assert.equal(fixedFrame(s,NaN).steps,0);assert.equal(fixedFrame(s,-1).steps,0);assert.equal(s.time,before);});
 
 import {drivingGuide,serviceGrade} from '../coaching.js';
+import {formatDistance} from '../coaching.js';
+import {deckGeometry,deckPoint,DECK_RANGES,addBridgeDecks} from '../bridges.js';
+import {trackPoint} from '../sim.js';
+import * as THREE from '../vendor/three.module.js';
+test('assist serves stopped overshoots inside tolerance and brakes/recover outside it',()=>{
+ for(const at of [648,658,659,659.1,680])for(const v of [0,3,12]){
+  const s=new SubwaySim();Object.assign(s,{s:at,next:1,doors:null,v,assist:true});
+  assert.equal(s.safeSpeed,0);const start=s.s;s.step(1/60);
+  if(at<659&&v===0){assert.equal(s.doors,'left');assert.equal(s.penalties,0);assert.equal(s.s,start);}
+  if(at>=659&&v>0){assert(s.handle<0);assert(s.v<v);}
+  advance(s,30);assert(s.stops.some(p=>p.name==='Bowery'));if(at>=659)assert.equal(s.penalties,1);else if(v===0)assert.equal(s.penalties,0);else assert(s.penalties<=1);assert(s.s<1310);
+ }
+});
+test('manual overshoot stays stopped and reports recovery at the exact tolerance edge',()=>{
+ const s=new SubwaySim();Object.assign(s,{s:659,next:1,doors:null,v:0});assert.equal(s.safeSpeed,0);assert.equal(drivingGuide(s).action,'RECOVER');advance(s,3);assert.equal(s.s,659);assert.equal(s.doors,null);assert.equal(s.penalties,0);
+ assert.equal(formatDistance(1600),'1.6 km');assert.equal(formatDistance(999),'999 m');assert.equal(formatDistance(-18),'18 m');
+});
+test('curved bridge decks have real top, underside and sealed edges across chunk boundaries',()=>{
+ const material=new THREE.MeshBasicMaterial(),ray=new THREE.Raycaster();
+ for(const[from,to]of DECK_RANGES)for(let start=from;start<to;start+=80){
+  const end=Math.min(start+80,to),g=deckGeometry(trackPoint,start,end),mesh=new THREE.Mesh(g,material);mesh.updateMatrixWorld();
+  for(const s of[start+.1,(start+end)/2,end-.1])for(const x of[-4.6,0,5,10,14.6]){
+   const top=deckPoint(trackPoint,s,x,-.5);ray.set(new THREE.Vector3(top.x,top.y+3,top.z),new THREE.Vector3(0,-1,0));const upper=ray.intersectObject(mesh);assert(upper.length>0,`${s} ${x} top`);assert(Math.abs(upper[0].point.y-top.y)<.02);
+   ray.set(new THREE.Vector3(top.x,top.y-3,top.z),new THREE.Vector3(0,1,0));const lower=ray.intersectObject(mesh);assert(lower.length>0,`${s} ${x} underside`);assert(Math.abs(lower[0].point.y-(top.y-.75))<.02);
+  }
+  if(end<to){const n=deckGeometry(trackPoint,end,Math.min(end+80,to)),a=g.attributes.position,b=n.attributes.position;for(let i=0;i<12;i++)assert.equal(a.array[a.array.length-12+i],b.array[i]);n.dispose();}g.dispose();
+ }
+ material.dispose();
+});
 test('coaching gives speed-dependent brake cue and prioritizes red signal',()=>{const s=new SubwaySim();s.next=1;s.doors=null;s.s=500;s.v=19;assert.equal(drivingGuide(s).action,'BRAKE');s.v=3;assert.notEqual(drivingGuide(s).action,'BRAKE');s.next=2;s.s=990;s.v=8;assert.equal(drivingGuide(s).targetIsSignal,true);assert.equal(drivingGuide(s).action,'BRAKE');s.s=1020;s.v=0;assert.equal(drivingGuide(s).action,'WAIT');});
 test('coast overrides assist and stop grades capture comfort',()=>{const s=new SubwaySim();s.doors=null;s.next=1;s.assist=true;s.handle=1;s.step(.1,{coast:true});assert.equal(s.assist,false);assert.equal(s.handle,0);s.s=640;s.v=0;s.segmentOverspeed=5;assert.equal(s.toggleDoors(),true);advance(s,5);s.toggleDoors();assert.equal(s.stops[0].comfort,90);assert.equal(serviceGrade(s).perfect,1);});
 
@@ -29,3 +58,10 @@ test('extended signals coach and protect at their own stop lines',()=>{const s=n
 test('manual guide warns before lower line limits',()=>{const s=new SubwaySim('full');s.doors=null;s.next=5;s.s=3200;s.v=17.5;let guide=drivingGuide(s);assert.equal(guide.action,'SLOW');assert.match(guide.text,/36 mph in 100m/);s.next=9;s.s=6450;s.v=21;guide=drivingGuide(s);assert.equal(guide.action,'SLOW');assert.equal(guide.zoneDistance,100);assert.equal(guide.upcomingLimit,17);assert.ok(guide.targetSpeed<21);});
 
 test('precision guidance remains positive until the marker and supports accurate keyboard-style stops',()=>{const s=new SubwaySim('quick');s.doors=null;s.next=1;s.s=631;s.v=0;assert.ok(drivingGuide(s).targetSpeed>2);s.s=639;assert.equal(drivingGuide(s).targetSpeed,0);const drive=new SubwaySim();for(let t=0;t<600&&drive.phase==='service';t+=.1){const guide=drivingGuide(drive);let input={};if(drive.doors){if(drive.dwell>4.1)drive.toggleDoors();}else if(guide.targetIsSignal&&drive.v<.35&&Math.abs(guide.signalDistance)<18)input.coast=true;else if(drive.aligned)drive.toggleDoors();else{const desired=Math.min(speedLimit(drive.s)-1,guide.targetSpeed);if(drive.v>desired+.25)input.brake=true;else if(drive.v<desired-.4)input.power=true;else input.coast=true;}for(let i=0;i<6;i++)drive.step(1/60,input);}assert.equal(drive.phase,'complete');assert.equal(drive.penalties,0);assert.ok(drive.stops.every(stop=>Math.abs(stop.error)<=3));});
+
+test('viaduct columns meet the deck underside and their footings without gaps',()=>{
+ const scene=new THREE.Scene(),mat=new THREE.MeshBasicMaterial(),boxes=[],box=(w,h,d,m)=>{const mesh=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),m);scene.add(mesh);boxes.push(mesh);return mesh;};addBridgeDecks({scene,box,place:m=>m,trackPoint,M:{dark:mat,platform:mat}});scene.updateMatrixWorld(true);
+ const decks=scene.children.filter(m=>m.name==='Continuous bridge deck'),ray=new THREE.Raycaster();
+ for(const column of boxes.filter(m=>m.geometry.parameters.width===.8)){const height=column.geometry.parameters.height,top=column.position.y+height/2;assert(Math.abs(column.position.y-height/2+8)<1e-8);ray.set(new THREE.Vector3(column.position.x,top-.1,column.position.z),new THREE.Vector3(0,1,0));const hits=ray.intersectObjects(decks);assert(hits.length);assert(Math.abs(hits[0].distance-.1)<.02,'column meets underside');}
+ for(const mesh of scene.children){mesh.geometry.dispose();}mat.dispose();
+});

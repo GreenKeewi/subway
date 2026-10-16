@@ -38,7 +38,7 @@ export class SubwaySim {
   get aligned(){return !!this.station&&Math.abs(this.distance)<19&&this.v<.3;}
   get nextSignal(){const i=this.signals.findIndex((signal,i)=>!this.signalStates[i].cleared&&signal.at>=this.s-8);return i<0?null:{...this.signals[i],...this.signalStates[i],index:i,distance:this.signals[i].at-this.s};}
   get signal(){return this.nextSignal&&this.nextSignal.distance<330?'red':'green';}
-  get safeSpeed(){let limit=speedLimit(this.s);if(this.station&&this.distance>0)limit=Math.min(limit,Math.sqrt(Math.max(0,this.distance-3)*1.5));const zone=nextSpeedZone(this.s);if(zone)limit=Math.min(limit,Math.sqrt(zone.limit*zone.limit+1.35*Math.max(0,zone.at-this.s-20)));const signal=this.nextSignal;if(signal&&signal.distance<370)limit=Math.min(limit,Math.sqrt(Math.max(0,signal.distance)*1.45));return limit;}
+  get safeSpeed(){let limit=speedLimit(this.s);if(this.station)limit=Math.min(limit,Math.sqrt(Math.max(0,this.distance-3)*1.5));const zone=nextSpeedZone(this.s);if(zone)limit=Math.min(limit,Math.sqrt(zone.limit*zone.limit+1.35*Math.max(0,zone.at-this.s-20)));const signal=this.nextSignal;if(signal&&signal.distance<370)limit=Math.min(limit,Math.sqrt(Math.max(0,signal.distance)*1.45));return limit;}
   toggleDoors(side){
     if(this.phase!=='service')return false;
     if(this.doors){
@@ -63,7 +63,11 @@ export class SubwaySim {
     if(input.coast)this.handle=0;
     if(input.brake)this.handle=clamp(this.handle-dt*1.5,-1,1);
     this.emergency=!!input.emergency;
-    if(this.assist){this.handle=clamp((this.safeSpeed-this.v)*.65,-1,1);if(this.aligned&&Math.abs(this.distance)<6)this.toggleDoors();}
+    if(this.assist){
+      // A missed marker stays a stopping target. Never power away from an unserved stop.
+      if(this.station&&this.distance<=-19){this.handle=-1;if(this.v<.3){this.recover();return;}}
+      else{this.handle=clamp((this.safeSpeed-this.v)*.65,-1,1);if(this.aligned&&this.distance<6){this.toggleDoors();return;}}
+    }
     let accel=this.handle>0?this.handle*.9:this.handle*1.45;
     if(this.emergency){accel=-2.7;this.handle=-1;}
     accel-=.06+this.v*.002;
@@ -76,7 +80,7 @@ export class SubwaySim {
       if(!state.cleared&&this.prevS<=signal.at+6&&this.s>signal.at+6){this.s=signal.at;this.v=0;this.handle=0;this.penalties++;this.score=Math.max(0,this.score-50);this.announce('Train protection stopped you at red. Wait for the signal.');}
     });
     if(this.station&&this.distance< -22&&this.messageAge>4)this.announce('Missed platform. Slow down, then press R to recover to '+this.station.name+'.');
-    if(this.assist&&this.aligned&&Math.abs(this.distance)<7)this.toggleDoors();
+    if(this.assist&&this.aligned&&this.distance<7)this.toggleDoors();
   }
   snapshot(){return {route:this.route,stationCount:this.stations.length,s:this.s,v:this.v,handle:this.handle,time:this.time,next:this.next,doors:this.doors,phase:this.phase,score:this.score,assist:this.assist,signal:this.signal,signalCleared:this.signalCleared,nextSignal:this.nextSignal,signals:this.signalStates.map(s=>({...s})),distance:this.distance,aligned:this.aligned,stops:this.stops,penalties:this.penalties,totalOverspeed:this.totalOverspeed,totalHarsh:this.totalHarsh,usedAssist:this.usedAssist};}
 }

@@ -8,11 +8,12 @@ export function addBoroughDetails({scene,box,at,place,trackPoint,STATIONS,M,rnd,
   function beam(a,b,width=.16,height=width,mat=iron){const av=new THREE.Vector3(a.x,a.y,a.z),bv=new THREE.Vector3(b.x,b.y,b.z),v=bv.clone().sub(av);const mesh=box(width,height,v.length(),mat);mesh.position.copy(av.add(bv).multiplyScalar(.5));mesh.quaternion.setFromUnitVectors(new THREE.Vector3(0,0,1),v.normalize());return mesh;}
   function point(s,x,y){const p=trackPoint(s),q=trackPoint(s+1),angle=Math.atan2(-(q.x-p.x),1);return {x:p.x+Math.cos(angle)*x,y:p.y+y,z:p.z-Math.sin(angle)*x};}
   // Riveted lattice girders and cross-bracing define the elevated line at street level.
-  for(let s=1160;s<2990;s+=48){for(const x of [-4.2,14.2]){const a=point(s,x,-1.5),b=point(s+48,x,-1.5);beam(a,b,.25,1.1);beam(point(s,x,-1.5),point(s+24,x,-3),.16);beam(point(s+24,x,-3),point(s+48,x,-1.5),.16);place(box(.8,30,.8,iron),s,x,-16);place(box(2.1,.25,1.4,stone),s,x,-30.7);}
-    beam(point(s,-4.2,-4),point(s,14.2,-4),.32,.5);beam(point(s,-4.2,-3),point(s,14.2,-8),.18);beam(point(s,14.2,-3),point(s,-4.2,-8),.18);
+  for(let s=1160;s<2990;s+=48){for(const x of [-4.2,14.2]){const a=point(s,x,-1.5),b=point(s+48,x,-1.5);beam(a,b,.25,1.1);beam(point(s,x,-1.5),point(s+24,x,-3),.16);beam(point(s+24,x,-3),point(s+48,x,-1.5),.16);}
+    beam(point(s,-4.2,-1.7),point(s,14.2,-1.7),.32,.4);beam(point(s,-4.2,-1.9),point(s+48,14.2,-1.9),.18);beam(point(s,14.2,-1.9),point(s+48,-4.2,-1.9),.18);
   }
   // Through-truss river crossing: a deliberate landmark between two neighbourhoods.
-  for(let s=1370;s<1600;s+=40){for(const x of [-4.4,14.4]){beam(point(s,x,.5),point(s+40,x,10),.35);beam(point(s,x,10),point(s+40,x,.5),.35);beam(point(s,x,10),point(s+40,x,10),.42);beam(point(s,x,.5),point(s,x,10),.32);}beam(point(s,-4.4,10),point(s,14.4,10),.3,.35);}
+  for(let s=1245;s<1685;s+=40){for(const x of [-4.4,14.4]){beam(point(s,x,.5),point(s+40,x,10),.35);beam(point(s,x,10),point(s+40,x,.5),.35);beam(point(s,x,10),point(s+40,x,10),.42);beam(point(s,x,.5),point(s,x,10),.32);}beam(point(s,-4.4,10),point(s,14.4,10),.3,.35);}
+  for(const x of[-4.4,14.4])beam(point(1685,x,.5),point(1685,x,10),.32);beam(point(1685,-4.4,10),point(1685,14.4,10),.3,.35);
   // Waterfront piers, barges and current streaks keep the water distinct from the street grid.
   const water=new THREE.MeshBasicMaterial({color:'#86a7a0',transparent:true,opacity:.28});for(let i=0;i<60;i++){const s=1290+rnd()*370,x=-150+rnd()*500;at(box(2+rnd()*9,.02,.12,water),x,-6.43,-s);}
   for(const s of [1290,1650]){const p=trackPoint(s);at(box(100,1.3,12,roof),p.x-125,-6,-s);for(let x=-170;x<-80;x+=14)at(box(1,9,1,iron),p.x+x,-10,-s);}

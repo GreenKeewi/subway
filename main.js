@@ -1,11 +1,12 @@
 import * as THREE from './vendor/three.module.js';
 import {mergeGeometries} from './vendor/BufferGeometryUtils.js';
-import {SubwaySim,STATIONS,FULL_STATIONS,ROUTES,SIGNALS,WORLD_END,SPEED_ZONES,speedLimit,trackPoint,clamp} from './sim.js?v=world2-1016';
-import {fixedFrame} from './timing.js?v=world2-1016';
-import {addBoroughDetails} from './world-detail.js?v=world2-1016';
-import {drivingGuide,serviceGrade,formatClock} from './coaching.js?v=world2-1016';
-import {SubwayAudio} from './audio.js?v=world2-1016';
-import {addExtendedWorld} from './extended-world.js?v=world2-1016';
+import {SubwaySim,STATIONS,FULL_STATIONS,ROUTES,SIGNALS,WORLD_END,SPEED_ZONES,speedLimit,trackPoint,clamp} from './sim.js?v=stops3-1016';
+import {fixedFrame} from './timing.js?v=stops3-1016';
+import {addBoroughDetails} from './world-detail.js?v=stops3-1016';
+import {drivingGuide,serviceGrade,formatClock,formatDistance} from './coaching.js?v=stops3-1016';
+import {SubwayAudio} from './audio.js?v=stops3-1016';
+import {addBridgeDecks} from './bridges.js?v=stops3-1016';
+import {addExtendedWorld} from './extended-world.js?v=stops3-1016';
 const $=id=>document.getElementById(id), sim=new SubwaySim(),keys=new Set();
 let renderer;try{renderer=new THREE.WebGLRenderer({canvas:$('world'),antialias:true,powerPreference:'high-performance'});}catch(error){$('menu').hidden=true;$('loading').innerHTML='<div class="graphics-error" role="alert"><h1>3D graphics could not start.</h1><p>Your browser could not open this 3D game. Try reloading, or choose another game from the hub.</p><button id="retry-graphics">Reload game</button><a href="https://greenkeewi.github.io/games/">All games</a></div>';$('retry-graphics').onclick=()=>location.reload();$('retry-graphics').focus();window.__subway={unavailable:true};}
 if(renderer){renderer.setPixelRatio(Math.min(devicePixelRatio,1.6));renderer.setSize(innerWidth,innerHeight);renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.15;
@@ -27,7 +28,7 @@ const dummy=new THREE.Object3D();for(let start=-160;start<WORLD_END;start+=400){
 for(let s=-150;s<845;s+=25){place(box(1,7.5,25.3,tunnelMat),s,-8,2.8);place(box(1,7.5,25.3,tunnelMat),s,17,2.8);place(box(26,1,25.3,tunnelMat),s,4.5,6.8);for(const x of (STATIONS.some(st=>Math.abs(st.at-s)<110)?[]:[-6.8,15.8])){place(box(.1,.15,25.4,M.black),s,x,2.1);place(box(.14,.14,25.4,M.black),s,x,2.4);}if(s%50===0){place(box(.22,.15,9,M.light),s,3,6.1);place(box(.14,.14,9,M.light),s,-2,6.1);}}
 // Cut-and-cover ramp opens onto the elevated line.
 for(let s=850;s<1170;s+=20){place(box(.7,3,21,M.dark),s,-4.2,.8);place(box(.7,3,21,M.dark),s,14.2,.8);}
-for(let s=1170;s<3030;s+=24){place(box(18,.9,24.5,M.dark),s,5,-1.2);for(const x of [-3.8,13.8]){place(box(.2,1,24.5,M.steel),s,x,.5);place(box(.13,.13,24.5,M.steel),s,x,1.1);place(box(.6,30,.6,M.dark),s,x,-16);}if(s%48===18){for(const x of [-3.8,13.8])place(box(.15,4,.15,M.steel),s,x,2);}}
+for(let s=1170;s<3030;s+=24){for(const x of [-3.8,13.8]){place(box(.2,1,24.5,M.steel),s,x,.5);place(box(.13,.13,24.5,M.steel),s,x,1.1);}if(s%48===18){for(const x of [-3.8,13.8])place(box(.15,4,.15,M.steel),s,x,2);}}
 // Ground plane, water and warm city skyline.
 const roadMat=new THREE.MeshStandardMaterial({color:'#283d40'}),paintMat=new THREE.MeshStandardMaterial({color:'#b8bca1'});
 for(let s=1100;s<3300;s+=160){at(box(1100,.03,20,roadMat),50,-7.95,-s);for(let x=-500;x<600;x+=32)at(box(12,.04,.35,paintMat),x,-7.91,-s);}
@@ -64,6 +65,7 @@ for(const car of cars){car.updateMatrixWorld(true);const inverse=new THREE.Matri
 // Cable runs and little urban details make the portals read at speed.
 for(let s=900;s<3000;s+=80){place(box(.2,5,.2,M.dark),s,-4.2,2.5);place(box(.4,.25,2,M.dark),s,-4.2,4.8);}
 const skyTex=textureCanvas(32,256,(c,w,h)=>{const g=c.createLinearGradient(0,0,0,h);g.addColorStop(0,'#496578');g.addColorStop(.4,'#b1bbb0');g.addColorStop(.53,'#e7cda0');g.addColorStop(1,'#839c91');c.fillStyle=g;c.fillRect(0,0,w,h);});const sky=new THREE.Mesh(new THREE.SphereGeometry(4500,24,16),new THREE.MeshBasicMaterial({map:skyTex,side:THREE.BackSide,fog:false,depthWrite:false,toneMapped:false}));sky.renderOrder=-100;scene.add(sky);const sunDisc=new THREE.Mesh(new THREE.SphereGeometry(65,16,16),new THREE.MeshBasicMaterial({color:'#ffe8af',fog:false,depthWrite:false,toneMapped:false}));sunDisc.position.set(-1200,750,-2800);sunDisc.renderOrder=-99;scene.add(sunDisc);
+addBridgeDecks({scene,box,place,trackPoint,M});
 addBoroughDetails({scene,box,at,place,trackPoint,STATIONS:FULL_STATIONS,M,rnd,textureCanvas,textSign});
 addExtendedWorld({scene,box,at,place,trackPoint,STATIONS:FULL_STATIONS,M,rnd,textureCanvas,textSign});
 // Batch static scenery by material and 200m section to keep Chromebook draw calls low.
@@ -108,10 +110,10 @@ addEventListener('keydown',e=>{if(e.ctrlKey||e.metaKey||e.altKey)return;trapTab(
 });addEventListener('keyup',e=>keys.delete(e.code));addEventListener('blur',()=>{keys.clear();if(started&&!paused&&!finished&&$('help').hidden)pause();});document.addEventListener('visibilitychange',()=>{if(document.hidden&&started&&!paused&&!finished)pause();});
 function ui(){const st=sim.station,guide=drivingGuide(sim);$('destination').textContent=ROUTES[sim.route].destination+' · Stop '+Math.min(sim.next+1,sim.stations.length)+' / '+sim.stations.length;
   $('speed').textContent=Math.round(sim.v*2.23694);$('speed').style.color=sim.v>speedLimit(sim.s)+1?'#ffad76':'#f8f5e8';$('limit').textContent='LIMIT '+Math.round(speedLimit(sim.s)*2.23694);$('next-name').textContent=st?st.name:'Queens Terminal';$('phase-label').textContent=guide.title;$('coach').textContent=guide.text;
-  $('distance').textContent=sim.aligned?'AT PLATFORM':Math.round(Math.abs(sim.distance))+' M '+(sim.distance<0?'PAST STOP':'TO STOP');$('clock').textContent=formatClock(sim.time);$('score').textContent=sim.score+' PTS';$('handle-dot').style.left=(sim.handle*.5+.5)*100+'%';$('handle-label').textContent=Math.abs(sim.handle)<.08?'COAST':sim.handle>0?'POWER '+Math.round(sim.handle*100)+'%':'BRAKE '+Math.round(-sim.handle*100)+'%';
+  $('distance').textContent=sim.station?formatDistance(sim.distance):'0 m';$('distance-context').textContent=sim.phase==='complete'?'SERVICE COMPLETE':sim.aligned?'AT PLATFORM':sim.distance<0?'PAST STOP':'TO NEXT STOP';$('clock').textContent=formatClock(sim.time);$('score').textContent=sim.score+' PTS';$('handle-dot').style.left=(sim.handle*.5+.5)*100+'%';$('handle-label').textContent=Math.abs(sim.handle)<.08?'COAST':sim.handle>0?'POWER '+Math.round(sim.handle*100)+'%':'BRAKE '+Math.round(-sim.handle*100)+'%';
   $('assist-state').textContent=sim.assist?'ASSIST ON':'MANUAL';$('assist-state').style.color=sim.assist?'#9fe2ae':'#9bb8ac';$('door-state').textContent=sim.doors?sim.doors.toUpperCase()+' DOORS OPEN':sim.aligned?st.side.toUpperCase()+' SIDE · D':'DOORS LOCKED';$('schedule').textContent=guide.schedule;$('cab-next').textContent=st?.name.toUpperCase()||'END OF LINE';
   const red=sim.signal==='red',activeSignal=sim.nextSignal;$('signal-light').style.background=red?'#ff6850':'#6ce391';$('signal-light').style.boxShadow=red?'0 0 12px #f44':'0 0 12px #4f6';$('signal-text').textContent=red?(activeSignal?.hold>0&&sim.v<.4?'RED · '+Math.max(1,Math.ceil(sim.signals[activeSignal.index].hold-activeSignal.hold))+'s HOLD':'STOP LINE · '+Math.max(0,Math.round(activeSignal?.distance||0))+'m'):'SIGNAL CLEAR';signalLamps.forEach((lamp,i)=>{lamp.material=sim.signalStates[i]?.cleared?M.green:M.red;});
-  $('brake-cue').textContent=guide.action;$('brake-cue').dataset.action=guide.action;$('target-speed').textContent=sim.doors?'':guide.targetIsSignal?'Signal stop ahead':(guide.action==='BRAKE'||guide.action==='EASE IN')?'Safe approach '+Math.round(guide.targetSpeed*2.23694)+' mph':guide.action==='SLOW'&&guide.upcomingLimit?'Limit '+Math.round(guide.upcomingLimit*2.23694)+' in '+Math.round(guide.zoneDistance)+'m':'Stop marker '+Math.max(0,Math.round(sim.distance))+'m';
+  $('brake-cue').textContent=({BRAKE:'BRAKE NOW',SLOW:'SLOW DOWN',RECOVER:sim.assist?'RECOVERING':'MISSED STOP',WAIT:'HOLD AT RED','OPEN DOORS':'OPEN DOORS',BOARDING:'BOARDING',READY:'READY',CRUISE:'CRUISE',COAST:'COAST','EASE IN':'EASE IN'})[guide.action]||guide.action;$('brake-detail').textContent=guide.action==='BRAKE'?'Hold Down · brake':guide.action==='RECOVER'?sim.assist?'Brake, then recover':'Stop, then press R':guide.targetIsSignal?'Signal '+formatDistance(guide.signalDistance):sim.doors?'D · close after boarding':guide.action==='OPEN DOORS'?'D · platform doors':'Braking range '+formatDistance(guide.brakingDistance);$('brake-cue').dataset.action=guide.action;$('target-speed').textContent=sim.doors?'':guide.targetIsSignal?'Signal stop ahead':(guide.action==='BRAKE'||guide.action==='EASE IN')?'Safe approach '+Math.round(guide.targetSpeed*2.23694)+' mph':guide.action==='SLOW'&&guide.upcomingLimit?'Limit '+Math.round(guide.upcomingLimit*2.23694)+' in '+Math.round(guide.zoneDistance)+'m':'Stop marker '+Math.max(0,Math.round(sim.distance))+'m';
   document.querySelectorAll('#route-progress li').forEach((li,i)=>{li.className=i<sim.next?'done':i===sim.next?'current':'';li.setAttribute('aria-current',i===sim.next?'step':'false');});
   $('cab-speed').textContent=Math.round(sim.v*2.23694);$('cab-brake').textContent=Math.round(90-Math.max(0,-sim.handle)*28);$('cab-needle').style.transform='rotate('+(-115+sim.v/26*230)+'deg)';
   if(lastMessage!==sim.message){lastMessage=sim.message;$('toast').textContent=sim.message;}$('toast').style.opacity=sim.messageAge<6?'1':'0';

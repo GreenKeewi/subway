@@ -1,0 +1,333 @@
+{
+  "method": "Same 1730m exterior fixture as pre-expansion; software Chromium. Sharp locked vs automatic measured independently.",
+  "sharp": {
+    "route": "quick",
+    "stationCount": 5,
+    "s": 1730,
+    "v": 0,
+    "handle": 0,
+    "time": 1.0000000000000013,
+    "next": 3,
+    "doors": null,
+    "phase": "service",
+    "score": 0,
+    "assist": false,
+    "signal": "green",
+    "signalCleared": true,
+    "nextSignal": null,
+    "signals": [
+      {
+        "cleared": true,
+        "hold": 0
+      }
+    ],
+    "distance": 370,
+    "aligned": false,
+    "stops": [],
+    "penalties": 0,
+    "totalOverspeed": 0,
+    "totalHarsh": 0,
+    "usedAssist": false,
+    "started": true,
+    "paused": false,
+    "view": "exterior",
+    "graphicsLost": false,
+    "guide": {
+      "title": "NEXT STOP",
+      "text": "Hold Up to add power. Z coasts; Down moves the handle into brake.",
+      "action": "CRUISE",
+      "upcomingLimit": 18,
+      "zoneDistance": 550,
+      "brakingDistance": 6,
+      "targetSpeed": 22,
+      "signalAhead": false,
+      "signalDistance": null,
+      "distance": 370,
+      "targetIsSignal": false,
+      "schedule": "Due 04:35 · 274s early"
+    },
+    "audio": {
+      "state": "running",
+      "masterGain": 1,
+      "allSourcesUseMaster": true,
+      "liveOneShots": 0
+    },
+    "graphics": {
+      "fps": 60,
+      "scale": 1,
+      "tier": 0,
+      "viewDistance": 2200
+    },
+    "renderer": {
+      "frame": 6,
+      "calls": 408,
+      "triangles": 172168,
+      "points": 0,
+      "lines": 0
+    }
+  },
+  "auto": {
+    "route": "quick",
+    "stationCount": 5,
+    "s": 1730,
+    "v": 0,
+    "handle": 0,
+    "time": 5.933333333333318,
+    "next": 3,
+    "doors": null,
+    "phase": "service",
+    "score": 0,
+    "assist": false,
+    "signal": "green",
+    "signalCleared": true,
+    "nextSignal": null,
+    "signals": [
+      {
+        "cleared": true,
+        "hold": 0
+      }
+    ],
+    "distance": 370,
+    "aligned": false,
+    "stops": [],
+    "penalties": 0,
+    "totalOverspeed": 0,
+    "totalHarsh": 0,
+    "usedAssist": false,
+    "started": true,
+    "paused": false,
+    "view": "exterior",
+    "graphicsLost": false,
+    "guide": {
+      "title": "NEXT STOP",
+      "text": "Hold Up to add power. Z coasts; Down moves the handle into brake.",
+      "action": "CRUISE",
+      "upcomingLimit": 18,
+      "zoneDistance": 550,
+      "brakingDistance": 6,
+      "targetSpeed": 22,
+      "signalAhead": false,
+      "signalDistance": null,
+      "distance": 370,
+      "targetIsSignal": false,
+      "schedule": "Due 04:35 · 269s early"
+    },
+    "audio": {
+      "state": "running",
+      "masterGain": 1,
+      "allSourcesUseMaster": true,
+      "liveOneShots": 0
+    },
+    "graphics": {
+      "fps": 3.6364958725771857,
+      "scale": 0.5,
+      "tier": 3,
+      "viewDistance": 700
+    },
+    "renderer": {
+      "frame": 24,
+      "calls": 210,
+      "triangles": 84602,
+      "points": 0,
+      "lines": 0
+    }
+  },
+  "pausedBefore": {
+    "route": "quick",
+    "stationCount": 5,
+    "s": 1730,
+    "v": 0,
+    "handle": 0,
+    "time": 5.933333333333318,
+    "next": 3,
+    "doors": null,
+    "phase": "service",
+    "score": 0,
+    "assist": false,
+    "signal": "green",
+    "signalCleared": true,
+    "nextSignal": null,
+    "signals": [
+      {
+        "cleared": true,
+        "hold": 0
+      }
+    ],
+    "distance": 370,
+    "aligned": false,
+    "stops": [],
+    "penalties": 0,
+    "totalOverspeed": 0,
+    "totalHarsh": 0,
+    "usedAssist": false,
+    "started": true,
+    "paused": true,
+    "view": "exterior",
+    "graphicsLost": false,
+    "guide": {
+      "title": "NEXT STOP",
+      "text": "Hold Up to add power. Z coasts; Down moves the handle into brake.",
+      "action": "CRUISE",
+      "upcomingLimit": 18,
+      "zoneDistance": 550,
+      "brakingDistance": 6,
+      "targetSpeed": 22,
+      "signalAhead": false,
+      "signalDistance": null,
+      "distance": 370,
+      "targetIsSignal": false,
+      "schedule": "Due 04:35 · 269s early"
+    },
+    "audio": {
+      "state": "running",
+      "masterGain": 0,
+      "allSourcesUseMaster": true,
+      "liveOneShots": 0
+    },
+    "graphics": {
+      "fps": 3.6364958725771857,
+      "scale": 0.5,
+      "tier": 3,
+      "viewDistance": 700
+    },
+    "renderer": {
+      "frame": 24,
+      "calls": 210,
+      "triangles": 84602,
+      "points": 0,
+      "lines": 0
+    }
+  },
+  "pausedAfter": {
+    "route": "quick",
+    "stationCount": 5,
+    "s": 1730,
+    "v": 0,
+    "handle": 0,
+    "time": 5.933333333333318,
+    "next": 3,
+    "doors": null,
+    "phase": "service",
+    "score": 0,
+    "assist": false,
+    "signal": "green",
+    "signalCleared": true,
+    "nextSignal": null,
+    "signals": [
+      {
+        "cleared": true,
+        "hold": 0
+      }
+    ],
+    "distance": 370,
+    "aligned": false,
+    "stops": [],
+    "penalties": 0,
+    "totalOverspeed": 0,
+    "totalHarsh": 0,
+    "usedAssist": false,
+    "started": true,
+    "paused": true,
+    "view": "exterior",
+    "graphicsLost": false,
+    "guide": {
+      "title": "NEXT STOP",
+      "text": "Hold Up to add power. Z coasts; Down moves the handle into brake.",
+      "action": "CRUISE",
+      "upcomingLimit": 18,
+      "zoneDistance": 550,
+      "brakingDistance": 6,
+      "targetSpeed": 22,
+      "signalAhead": false,
+      "signalDistance": null,
+      "distance": 370,
+      "targetIsSignal": false,
+      "schedule": "Due 04:35 · 269s early"
+    },
+    "audio": {
+      "state": "running",
+      "masterGain": 0,
+      "allSourcesUseMaster": true,
+      "liveOneShots": 0
+    },
+    "graphics": {
+      "fps": 3.6364958725771857,
+      "scale": 0.5,
+      "tier": 3,
+      "viewDistance": 700
+    },
+    "renderer": {
+      "frame": 24,
+      "calls": 210,
+      "triangles": 84602,
+      "points": 0,
+      "lines": 0
+    }
+  },
+  "resized": {
+    "route": "quick",
+    "stationCount": 5,
+    "s": 1730,
+    "v": 0,
+    "handle": 0,
+    "time": 5.933333333333318,
+    "next": 3,
+    "doors": null,
+    "phase": "service",
+    "score": 0,
+    "assist": false,
+    "signal": "green",
+    "signalCleared": true,
+    "nextSignal": null,
+    "signals": [
+      {
+        "cleared": true,
+        "hold": 0
+      }
+    ],
+    "distance": 370,
+    "aligned": false,
+    "stops": [],
+    "penalties": 0,
+    "totalOverspeed": 0,
+    "totalHarsh": 0,
+    "usedAssist": false,
+    "started": true,
+    "paused": true,
+    "view": "exterior",
+    "graphicsLost": false,
+    "guide": {
+      "title": "NEXT STOP",
+      "text": "Hold Up to add power. Z coasts; Down moves the handle into brake.",
+      "action": "CRUISE",
+      "upcomingLimit": 18,
+      "zoneDistance": 550,
+      "brakingDistance": 6,
+      "targetSpeed": 22,
+      "signalAhead": false,
+      "signalDistance": null,
+      "distance": 370,
+      "targetIsSignal": false,
+      "schedule": "Due 04:35 · 269s early"
+    },
+    "audio": {
+      "state": "running",
+      "masterGain": 0,
+      "allSourcesUseMaster": true,
+      "liveOneShots": 0
+    },
+    "graphics": {
+      "fps": 3.6364958725771857,
+      "scale": 0.5,
+      "tier": 3,
+      "viewDistance": 700
+    },
+    "renderer": {
+      "frame": 25,
+      "calls": 210,
+      "triangles": 84602,
+      "points": 0,
+      "lines": 0
+    }
+  }
+}

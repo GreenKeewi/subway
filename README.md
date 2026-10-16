@@ -44,6 +44,19 @@ Both route lengths use the same service simulation, with route-specific station 
 
 Independent normal-rAF full-line playtests completed every station and all three signals: manual driving took 718.92 simulation / 720.55 wall seconds, with ten stops on the marker, 1,500 points, 100% comfort and no assist, recovery, overspeed, safety penalty or JavaScript error. The assisted run took 700.10 simulation / 700.91 wall seconds with the same perfect-stop result. Full results keep the achievement and replay controls visible while the keyboard-focusable stop report scrolls independently. `tests/final-visual.cjs` checks that layout at 1024×600 and 683×384, native report scrolling/replay, and the raised yard chase fixture.
 
-## Published independent full-service evidence
+## Prior full-service evidence (preceding runtime)
 
-The latest independent normal-animation keyboard run completed the Full Borough Line in 717.17 simulation / 719.98 wall seconds: all ten stops on the marker, all three protected signals cleared, 1,500 points and 100% comfort. Assist stayed off; there was no recovery, safety penalty, overspeed, emergency brake or JavaScript error. The automated driver used native digital keys and read the production precision guide; it did not write train state or advance simulation time. The [published raw report](https://greenkeewi.github.io/games/verification/reports/current/subway-qa.json) identifies the tested runtime and method. This README update leaves the tested runtime unchanged. Live-origin cloud requests remain proxy-blocked; exact repository hashes and Pages jobs are separate evidence in the hub release manifest.
+A preceding independent normal-animation keyboard run completed the Full Borough Line in 717.17 simulation / 719.98 wall seconds: all ten stops on the marker, all three protected signals cleared, 1,500 points and 100% comfort. Assist stayed off; there was no recovery, safety penalty, overspeed, emergency brake or JavaScript error. The automated driver used native digital keys and read the production precision guide; it did not write train state or advance simulation time. The [published raw report](https://greenkeewi.github.io/games/verification/reports/current/subway-qa.json) identifies the tested runtime and method. That report describes the preceding runtime; current repair evidence is linked below. Live-origin cloud requests remain proxy-blocked; exact repository hashes and Pages jobs are separate evidence in the hub release manifest.
+
+
+## Stop guidance and bridge repairs (2026-10-16)
+
+The next-stop card shows a large live distance countdown in metres, switching to kilometres above 1 km, with a prominent braking action and keyboard cue. Essential coach text is at least 14 px at the checked 683×384 and larger layouts; the layout also fits 390×844. The exact marker distance remains visible at the platform.
+
+Assist keeps an unserved station as a stopping target after passing its marker. Within the existing 19 m door tolerance it boards once stopped; at or beyond that boundary it brakes to a stop and uses the existing penalized recovery. Manual mode retains the R recovery choice. Bowery fixtures at 648, 658, 659 and 659.1 m are covered.
+
+Continuous curved/graded deck meshes now cover exposed approaches, viaducts and waterfront crossings. The decks have real top, bottom, side and end surfaces; adjoining sections share endpoint vertices. Floor beams and ground-reaching supports carry them, leaving river spans open. Both surfaces and section joins are ray-tested, and local full-scene exterior/underside captures are provided.
+
+The fresh native-key manual full-line run served all ten stops on marker in 707.52 simulation / 707.45 wall seconds: 1,500 points, 100% comfort, all three signals clear, no assist, recovery, overspeed, emergency, safety penalty or JavaScript errors. Keyboard replay passed.
+
+See `evidence/stop-repairs/README.md` for current tests, browser fixtures, full manual service evidence and environment limits. These are local Chromium tests; the cloud proxy blocks direct public Pages browsing. Successful exact-commit Pages deployment is checked separately. No physical Chromebook or Wi-Fi behavior is claimed.
