@@ -1,0 +1,10 @@
+import test from 'node:test';import assert from 'node:assert/strict';import {SubwaySim,STATIONS} from '../sim.js';
+const advance=(s,seconds,input={})=>{for(let t=0;t<seconds;t+=1/60)s.step(1/60,input);};
+test('boarding enforces dwell and movement interlock',()=>{const s=new SubwaySim();advance(s,3,{power:true});assert.equal(s.v,0);assert.equal(s.toggleDoors(),false);advance(s,2);assert.equal(s.toggleDoors(),true);assert.equal(s.next,1);advance(s,8,{power:true});assert.ok(s.v>3);assert.equal(s.toggleDoors(),false);assert.equal(s.doors,null);});
+test('wrong-side doors refuse, platform side succeeds',()=>{const s=new SubwaySim();advance(s,5);s.toggleDoors();s.s=STATIONS[1].at;s.v=0;assert.equal(s.toggleDoors('right'),false);assert.equal(s.toggleDoors('left'),true);});
+test('red signal protects train and releases after wait',()=>{const s=new SubwaySim();s.doors=null;s.next=2;s.s=1025;s.v=5;s.handle=1;advance(s,1);assert.equal(s.s,1020);assert.equal(s.v,0);advance(s,7);assert.equal(s.signalCleared,true);});
+test('recovery restores missed platform and applies penalty',()=>{const s=new SubwaySim();s.next=1;s.doors=null;s.s=760;s.v=15;s.recover();assert.equal(s.s,640);assert.equal(s.v,0);assert.equal(s.doors,'left');assert.equal(s.penalties,1);});
+test('full assisted service visits all five stations and obeys signal',()=>{const s=new SubwaySim();s.assist=true;advance(s,620);assert.equal(s.phase,'complete');assert.equal(s.stops.length,5);assert.equal(s.penalties,0);assert.equal(s.signalCleared,true);assert.ok(s.stops.every(x=>Math.abs(x.error)<7));});
+test('manual input overrides assist and invalid timestep is harmless',()=>{const s=new SubwaySim();s.doors=null;s.next=1;s.assist=true;s.step(.1,{power:true});assert.equal(s.assist,false);const before=s.s;s.step(NaN);assert.equal(s.s,before);});
+
+test('recovering beyond a red signal does not teleport backwards',()=>{const s=new SubwaySim();s.next=3;s.s=2200;s.doors=null;s.recover();advance(s,5);s.toggleDoors();advance(s,2,{power:true});assert.ok(s.s>=2100);});
